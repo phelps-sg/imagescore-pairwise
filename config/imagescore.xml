@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+<!-- 	<bean id="gameTheoreticSimulation" class="net.sourceforge.jabm.gametheory.GameTheoreticSimulationController"> -->
+<!-- 		<property name="payoffByStrategy" ref="payoffByStrategyReportVariables"/> -->
+<!-- 		<property name="strategyInitialisers">  -->
+<!-- 			<list>  -->
+<!-- 	  			<ref bean="cooperatorThresholdInitialiser"/>  -->
+<!-- 	  			<ref bean="defectorThresholdInitialiser"/>    -->
+<!-- 	  			<ref bean="discriminatorThresholdInitialiserFmc"/>  -->
+<!--  	  			<ref bean="discriminatorThresholdInitialiserFmd"/>   -->
+<!-- 	  		  	<ref bean="titForTatInitialiser"/>  -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 		<property name="underlyingSimulation" ref="repeatedInteractionSimulation"/> -->
+<!-- 	</bean>  -->
+	
+	<bean id="simulationController" class="net.sourceforge.jabm.gametheory.GameTheoreticSimulationController">
+		<property name="numSimulations" value="400000" /> 
+		<property name="simulationBeanName">
+			<idref bean="repeatedInteractionSimulation"/>
+		</property>
+		<property name="payoffByStrategy" ref="payoffByStrategyReportVariables"/>
+		<!-- <property name="strategyInitialisers" ref="strategiesCDSdT"/> -->
+		<property name="strategyInitialisers" ref="strategiesCDST"/> 
+		<property name="reports">
+			<list>				
+				<ref bean="payoffByStrategyReport"/>  
+				<ref bean="payoffByStrategyReportVariables"/>
+				<!-- <ref bean="interactionHistoryLengthReport"/> --> 
+<!-- 				<ref bean="heuristicPayoffReport"/>  -->
+<!-- 				 <ref bean="batchReport"/>  -->
+				<!-- <ref bean="strategyFrequency"/> -->  
+				<!--  <ref bean="strategyBarChart"/> --> 
+				<!-- <ref bean="relationshipTracker"/> -->
+				<!-- <ref bean="relationshipGraphView"/> -->			
+			</list>
+		</property>		
+		<property name="csvFileName" value="payoffs.csv"/>
+		<property name="fileNamePrefix" ref="fileNamePrefix"/>
+	</bean>
+
+	<bean id="strategiesTSdD" class="java.util.LinkedList">
+		<constructor-arg>
+			<list>
+				<ref bean="titForTatInitialiser" />
+				<ref bean="discriminatorThresholdInitialiserFmd" />
+				<ref bean="defectorThresholdInitialiser" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="strategiesTSD" class="java.util.LinkedList">
+		<constructor-arg>
+			<list>
+				<ref bean="titForTatInitialiser" />
+				<ref bean="discriminatorThresholdInitialiserFmc" />
+				<ref bean="defectorThresholdInitialiser" />
+			</list>
+		</constructor-arg>
+	</bean>
+		
+	<bean id="strategiesTCD" class="java.util.LinkedList">
+		<constructor-arg>
+			<list>
+				<ref bean="titForTatInitialiser" />
+				<ref bean="cooperatorThresholdInitialiser" />
+				<ref bean="defectorThresholdInitialiser" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="strategiesCSD" class="java.util.LinkedList">
+		<constructor-arg>
+			<list>
+				<ref bean="cooperatorThresholdInitialiser"/>
+				<ref bean="discriminatorThresholdInitialiserFmc"/>
+				<ref bean="defectorThresholdInitialiser"/>
+			</list>	
+		</constructor-arg>
+	</bean>
+	
+	<bean id="strategiesCSdD" class="java.util.LinkedList">
+		<constructor-arg>
+			<list>
+				<ref bean="cooperatorThresholdInitialiser"/>
+				<ref bean="discriminatorThresholdInitialiserFmd"/>
+				<ref bean="defectorThresholdInitialiser"/>
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="strategiesCDSdT" class="java.util.LinkedList">		
+	 	<constructor-arg>
+			<list>
+				<ref bean="cooperatorThresholdInitialiser"/>
+				<ref bean="defectorThresholdInitialiser"/>
+				<ref bean="discriminatorThresholdInitialiserFmc"/>
+				<ref bean="discriminatorThresholdInitialiserFmd"/>
+				<ref bean="titForTatInitialiser" />
+			</list>
+		</constructor-arg>
+	</bean>
+		
+	<bean id="strategiesCDST" class="java.util.LinkedList">		
+	 	<constructor-arg>
+			<list>
+				<ref bean="cooperatorThresholdInitialiser"/>
+				<ref bean="defectorThresholdInitialiser"/>
+				<ref bean="discriminatorThresholdInitialiserFmc"/>
+				<ref bean="titForTatInitialiser" />
+			</list>
+		</constructor-arg>
+	</bean>
+	
+
+	<bean id="repeatedInteractionSimulation" class="net.sourceforge.jabm.RepeatedInteractionSimulation"
+		scope="simulation">
+		<property name="simulationController" ref="simulationController" />
+		<property name="maximumRounds" value="100" />
+		<property name="agentMixer" ref="pairwiseAgentMixer" />
+		<property name="population" ref="population" />
+		<property name="agentInitialiser" ref="basicAgentInitialiser" />
+	</bean>
+
+<!-- 	<bean id="evolutionarySimulation" class="net.sourceforge.jabm.EvolutionarySimulation"> -->
+<!-- 		<constructor-arg ref="simulationController"/> -->
+<!-- 		<property name="numGenerations" value="100"/> -->
+<!-- 	</bean> -->
+	
+	<bean id="simpleSimulation" class="net.sourceforge.jabm.SimpleSimulation">
+		<constructor-arg ref="simulationController"/>
+	</bean>
+	
+	<bean id="pairwiseAgentMixer" class="net.sourceforge.jabm.mixing.StochasticPairwiseAgentMixer">
+		<property name="prng" ref="prng"/>
+<!-- 		<property name="numSteps" value="12"/> -->
+	</bean>
+	
+<!-- 	<bean id="subGroupAgentMixer" class="net.sourceforge.jabm.SubgroupAgentMixer"> -->
+<!-- 		<constructor-arg ref="prng"/> -->
+<!-- 		<property name="groupSize" value="200"/> -->
+<!-- 		<property name="numGroups" value="5"/> -->
+<!-- 	</bean> -->
+	
+	<bean id="agentInitialiser" class="net.sourceforge.jabm.init.CombiAgentInitialiser">
+		<constructor-arg>
+			<list>
+				<ref bean="basicAgentInitialiser" />
+				<!-- <ref bean="randomThresholdInitialiser" /> -->
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="population" scope="simulation" class="net.sourceforge.jabm.Population">
+		<property name="agentList" ref="agents"/>
+		<property name="prng" ref="prng"/>
+	</bean>
+	
+	<bean id="agents" class="net.sourceforge.jabm.agent.AgentList"
+			init-method="populateFromFactory">
+		<property name="size" value="10"/>
+		<property name="agentFactory" ref="agentFactory"/>
+	</bean>
+	
+	<bean id="agent" scope="prototype"
+			class="net.sourceforge.jabm.imagescorepairwise.ImageScoreAgent">
+		<property name="benefit" value="1.0f" />
+		<property name="cost" value="0.1f" />
+		<property name="minFitness" value="0f" />
+		<property name="initialFitness" value="0.0f" />
+		<property name="maxImageScore" value="5" />
+		<property name="minImageScore" value="-5" />
+	</bean>
+	
+	<bean id="defectorThresholdStrategy" scope="prototype" 
+			class="net.sourceforge.jabm.imagescorepairwise.strategy.ImageScoreThresholdStrategy">
+		<constructor-arg value="6"/>
+		<property name="scheduler" ref="simulationController"/>
+	</bean>
+	
+	<bean id="discriminatorThresholdStrategyFmd" scope="prototype"
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.ImageScoreThresholdStrategy">
+		<constructor-arg value="0"/>
+		<property name="firstMoveStrategy" ref="defectorThresholdStrategy"/>
+		<property name="scheduler" ref="simulationController"/>
+	</bean>
+	
+	<bean id="discriminatorThresholdStrategyFmc" scope="prototype"
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.ImageScoreThresholdStrategy">
+		<constructor-arg value="0"/>
+		<property name="firstMoveStrategy" ref="cooperatorThresholdStrategy"/>
+		<property name="scheduler" ref="simulationController"/>
+	</bean>
+	
+	<bean id="cooperatorThresholdStrategy" scope="prototype"
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.ImageScoreThresholdStrategy">
+		<constructor-arg value="-5"/>
+		<property name="scheduler" ref="simulationController"/>
+	</bean>
+	
+	<bean id="titForTatStrategy" scope="prototype" 
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.TitForTatStrategy">
+		<property name="scheduler" ref="simulationController"/>
+		<property name="threshold" value="0.0"/>
+	</bean>
+	
+	<bean id="tatForTitStrategy" scope="prototype"
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.InteractionHistoryStrategy">
+		<constructor-arg value="1.0f"/>
+		<property name="firstMoveStrategy" ref="defectorThresholdStrategy"/>
+		<property name="scheduler" ref="simulationController"/>
+	</bean>
+	
+	<bean id="basicAgentInitialiser" class="net.sourceforge.jabm.init.BasicAgentInitialiser">
+	</bean>
+		
+	<bean id="randomThresholdInitialiser"
+		class="net.sourceforge.jabm.imagescorepairwise.strategy.RandomThresholdInitialiser">
+		<constructor-arg>
+			<bean class="cern.jet.random.Uniform">
+				<constructor-arg index="0" value="-5" />
+				<constructor-arg index="1" value="6" />
+				<constructor-arg index="2" ref="prng" />
+			</bean>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="proportionalAgentInitialiser"
+		class="net.sourceforge.jabm.init.ProportionalCombiAgentInitialiser">
+		<property name="proportions">
+			<list>
+				<value>0.50</value>
+				<value>0.50</value>
+<!-- 				<value>0.00</value> -->
+			</list>
+		</property>
+		<property name="initialisers">
+			<list>
+				<ref bean="titForTatInitialiser" />
+<!-- 				<ref bean="tatForTitInitialiser" /> -->
+<!-- 				<ref bean="discriminatorThresholdInitialiserFmc" /> -->
+<!-- 				<ref bean="cooperatorThresholdInitialiser" /> -->
+				<ref bean="defectorThresholdInitialiser" />
+			</list>
+		</property>
+	</bean>
+		
+	<bean id="defectorThresholdInitialiser"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="defectorThresholdStrategyFactory"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="discriminatorThresholdInitialiserFmc"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="discriminatorThresholdStrategyFactoryFmc"/>
+		</constructor-arg>
+	</bean>
+	
+	
+	<bean id="discriminatorThresholdInitialiserFmd"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="discriminatorThresholdStrategyFactoryFmd"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="cooperatorThresholdInitialiser"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="cooperatorThresholdStrategyFactory"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="titForTatInitialiser"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="titForTatStrategyFactory"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="tatForTitInitialiser"
+		class="net.sourceforge.jabm.init.StrategyInitialiser">
+		<constructor-arg>
+			<ref bean="tatForTitStrategyFactory"/>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="titForTatStrategyFactory"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="titForTatStrategy"/></property>
+	</bean>
+	
+	<bean id="tatForTitStrategyFactory"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="tatForTitStrategy"/></property>
+	</bean>
+	
+	<bean id="cooperatorThresholdStrategyFactory"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="cooperatorThresholdStrategy"/></property>
+	</bean>
+	
+	<bean id="discriminatorThresholdStrategyFactoryFmc"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="discriminatorThresholdStrategyFmc"/></property>
+	</bean>
+	
+	<bean id="discriminatorThresholdStrategyFactoryFmd"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="discriminatorThresholdStrategyFmd"/></property>
+	</bean>
+	
+	<bean id="defectorThresholdStrategyFactory"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName"><idref bean="defectorThresholdStrategy"/></property>
+	</bean>
+	
+	<bean id="prng" class="cern.jet.random.engine.MersenneTwister64">
+		<constructor-arg><bean class="java.util.Date"/></constructor-arg>
+	</bean>
+
+	<bean id="agentFactory"
+		class="org.springframework.beans.factory.config.ObjectFactoryCreatingFactoryBean">
+		<property name="targetBeanName">
+			<idref bean="agent"/>
+		</property>
+	</bean>
+			
+<!-- 	<bean id="relationshipTracker" -->
+<!-- 		class="net.sourceforge.jabm.imagescorepairwise.view.RelationshipGraphView"> -->
+<!-- 		<constructor-arg ref="population" /> -->
+<!-- 		<constructor-arg ref="relationshipTracker" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="strategyFrequency" class="net.sourceforge.jabm.report.StrategyFrequency"> -->
+<!-- 		<constructor-arg> -->
+<!-- 			<bean class="net.sourceforge.jasa.imagescore.strategy.ThresholdStrategyComparator"/> -->
+<!-- 		</constructor-arg> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="strategyBarChart" class="net.sourceforge.jabm.view.StrategyBarChart"> -->
+<!-- 		<constructor-arg ref="strategyFrequency"/> -->
+<!-- 	</bean> -->
+	
+<!-- 	<bean id="strategyFrequencyTimeSeriesChart" -->
+<!-- 		class="net.sourceforge.jasa.imagescore.view.StrategyFrequencyTimeSeriesChart"> -->
+<!-- 		<constructor-arg ref="strategyFrequencyByTime" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="strategyFrequencyCsvWriter" -->
+<!-- 		class="net.sourceforge.jabm.report.FrequencyByTimeCsvWriter"> -->
+<!-- 		<constructor-arg value="data/frequency.csv"></constructor-arg> -->
+<!-- 		<constructor-arg ref="strategyFrequency" /> -->
+<!-- 	</bean> -->
+
+<!-- 	<bean id="strategyFrequencyByTime" -->
+<!-- 		class="net.sourceforge.jasa.imagescore.report.StrategyFrequencyByTime"> -->
+<!-- 		<constructor-arg> -->
+<!-- 			<bean -->
+<!-- 				class="net.sourceforge.jasa.imagescore.strategy.ThresholdStrategyComparator" /> -->
+<!-- 		</constructor-arg> -->
+<!-- 	</bean> -->
+	
+	<bean id="payoffByStrategyReport" 
+			class="net.sourceforge.jabm.report.SimulationFinishedNoInitialisation">
+		<property name="reportVariables" ref="payoffByStrategyReportVariables"/>
+<!-- 		<property name="sampleInterval" value="100"/> -->
+	</bean>
+	
+	<bean id="payoffByStrategyBarChart" class="net.sourceforge.jabm.view.BarChart">
+		<property name="reportVariables" ref="payoffByStrategyReportVariables" />
+	</bean>
+	
+	<bean id="payoffByStrategyReportVariables" scope="singleton" class="net.sourceforge.jabm.report.PayoffByStrategyReportVariables">
+	</bean>
+
+	<bean id="interactionHistoryLengthReport" class="net.sourceforge.jabm.imagescorepairwise.report.InteractionHistoryLengthReport">	
+	</bean>
+	
+	<bean id="batchReport" class="net.sourceforge.jabm.report.BatchMetaReport" scope="singleton">
+		<constructor-arg>
+			<list>
+				<ref bean="payoffByStrategyReport"/>
+<!-- 				<ref bean="interactionHistoryLengthReport"/> -->
+			</list>
+		</constructor-arg>
+	</bean>
+	
+	<bean id="totalFitnessCsvWriter"
+		class="net.sourceforge.jabm.report.TotalFitnessCsvWriter" >
+			<constructor-arg value="data/population-fitness.csv" />
+	</bean>
+	
+<!-- 	<bean id="heuristicPayoffReport" -->
+<!-- 		class="net.sourceforge.jabm.report.HeuristicPayoffReport"> -->
+<!-- 		<property name="csvFileName" value="data/payoffs.csv"/> -->
+<!-- 		<property name="binFileName" value="data/payoffs.bin"/> -->
+<!-- 	</bean> -->
+	
+	<bean id="fileNamePrefix" class="net.sourceforge.jabm.util.MutableStringWrapper">
+		<property name="value" value="data/"/>
+	</bean>
+
+</beans>
+ 
